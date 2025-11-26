@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Not just a CV - The Wheel</title>
+    <title>Career Mode - The Wheel</title>
     <style>
         /* --- DESIGN & COULEURS --- */
         :root {
-            /* Ta Palette */
             --vert: #8EDF90;
             --rouge: #FB9292;
             --bleu: #92B5FB;
@@ -26,10 +25,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden; /* Empêche le scroll pendant que ça tourne */
+            overflow: hidden;
         }
 
-        /* LOGO EN HAUT À GAUCHE */
+        /* LOGO */
         .logo-container {
             position: absolute;
             top: 20px;
@@ -37,44 +36,26 @@
             z-index: 10;
         }
 
-        .logo-text {
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: #2C3E50;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: white;
-            padding: 5px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        /* CONTENEUR DE LA ROUE */
+        /* CONTENEUR ROUE */
         .wheel-container {
             position: relative;
             width: 500px;
             height: 500px;
-            /* Ombre portée pour donner du volume */
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
             cursor: pointer;
             transition: transform 0.2s;
         }
 
+        .wheel-container:active { transform: scale(0.98); }
+
         canvas {
             width: 100%;
             height: 100%;
-        }
-
-        .wheel-container:active {
-            transform: scale(0.98);
-        }
-
-        canvas {
             border-radius: 50%;
             border: 8px solid white;
         }
 
-        /* LE POINTEUR (FLÈCHE) */
+        /* POINTEUR */
         .pointer {
             position: absolute;
             top: -20px;
@@ -84,19 +65,17 @@
             height: 0; 
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-top: 40px solid #2C3E50; /* Couleur foncée pour contraste */
+            border-top: 40px solid #2C3E50;
             z-index: 5;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
-        /* LE BOUTON CENTRAL */
+        /* BOUTON SPIN */
         .spin-btn {
             position: absolute;
-            top: 51.5%;
-            left: 51.5%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
+            width: 60px; height: 60px;
             background: white;
             border-radius: 50%;
             display: flex;
@@ -106,12 +85,12 @@
             color: #2C3E50;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             font-size: 0.8rem;
-            pointer-events: none; /* Le clic passe à travers vers le canvas */
+            pointer-events: none;
         }
 
         /* --- POPUP DE RÉSULTAT (MODAL) --- */
         .modal {
-            display: none; /* Caché par défaut */
+            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
@@ -124,14 +103,14 @@
 
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 40px;
             border-radius: 20px;
             text-align: center;
-            max-width: 80%;
-            width: 300px;
+            max-width: 85%;
+            width: 350px;
             box-shadow: 0 20px 25px rgba(0,0,0,0.2);
             animation: popIn 0.3s ease-out;
-            border-top: 10px solid var(--violet); /* Couleur par défaut, changée par JS */
+            border-top: 15px solid var(--violet);
         }
 
         @keyframes popIn {
@@ -139,33 +118,58 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        h2 { margin-top: 0; color: #2C3E50; }
-        p { font-size: 1.2rem; margin-bottom: 20px; font-weight: bold; }
+        /* Style des textes du Popup */
+        #resultType {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #2C3E50;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.7;
+        }
+
+        #resultName {
+            font-size: 2rem;
+            margin: 0 0 15px 0;
+            font-weight: 900;
+            color: #333;
+        }
+
+        #resultDesc {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            font-style: italic;
+        }
 
         .close-btn {
             background: #2C3E50;
             color: white;
             border: none;
-            padding: 10px 25px;
+            padding: 12px 30px;
             border-radius: 50px;
             font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
         }
 
         .close-btn:hover { background: #1a252f; }
 
-        /* Responsive Mobile */
+        /* Responsive */
         @media (max-width: 500px) {
             .wheel-container { width: 300px; height: 300px; }
             .logo-text { font-size: 1rem; }
+            #resultName { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
     <div class="logo-container">
-        <img src="logo.svg" alt="cul" style="height: 100px; width: 100px; position: absolute; top: 0px;">
+        <img src="logo.svg" alt="Logo" style="height: 100px; width: 100px; position: absolute; top: 0px;">
     </div>
 
     <div class="wheel-container" onclick="spinWheel()">
@@ -176,95 +180,135 @@
 
     <div id="resultModal" class="modal">
         <div class="modal-content" id="modalCard">
-            <h2 id="resultTitle">RESULT</h2>
-            <p id="resultText">...</p>
-            <button class="close-btn" onclick="closeModal()">Continue</button>
+            <h3 id="resultType">TYPE</h3>
+            <h1 id="resultName">NAME</h1>
+            <p id="resultDesc">Description...</p>
+            
+            <button class="close-btn" onclick="closeModal()">CONTINUE</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
-        const size = 500; // Taille interne du dessin
+        const size = 500;
         const centerX = size / 2;
         const centerY = size / 2;
         const radius = size / 2;
 
-        // Les Couleurs demandées
         const colors = {
-            bonus: '#8EDF90',  // Vert
-            malus: '#FB9292',  // Rouge
-            special: '#92B5FB',// Bleu
-            neutral: '#FFDB26' // Jaune
+            bonus: '#8EDF90',   // Vert
+            malus: '#FB9292',   // Rouge
+            special: '#92B5FB', // Bleu
+            neutral: '#FFDB26'  // Jaune
         };
 
-        // --- LES SEGMENTS (Respect des 40% / 30% / 20% / 10%) ---
-        // 10 Segments au total
+        // --- SEGMENTS : text = Sur la roue / desc = Dans le popup ---
         const segments = [
-            { text: "Promotion", type: "BONUS", color: colors.bonus },
-            { text: "Burnout", type: "MALUS", color: colors.malus },
-            { text: "Productivity", type: "BONUS", color: colors.bonus },
-            { text: "Team Building", type: "SPECIAL", color: colors.special },
-            { text: "Budget Cuts", type: "MALUS", color: colors.malus },
-            { text: "Headhunter", type: "BONUS", color: colors.bonus },
-            { text: "Coffee Break", type: "NEUTRAL", color: colors.neutral },
-            { text: "Wifi Down", type: "MALUS", color: colors.malus },
-            { text: "CEO's Favorite", type: "BONUS", color: colors.bonus },
-            { text: "Audit", type: "SPECIAL", color: colors.special }
+            { 
+                text: "Promotion", 
+                type: "BONUS", 
+                color: colors.bonus,
+                desc: "You may ask an opponent for a card even if you do not have any members of that family."
+            },
+            { 
+                text: "Burnout", 
+                type: "MALUS", 
+                color: colors.malus,
+                desc: "You are exhausted. Skip your turn immediately."
+            },
+            { 
+                text: "Productivity", 
+                type: "BONUS", 
+                color: colors.bonus,
+                desc: "Draw 2 cards from the deck instead of asking someone for a card."
+            },
+            { 
+                text: "Team Building", 
+                type: "SPECIAL", 
+                color: colors.special,
+                desc: "Everyone gives 1 card from their hand to the player on their left."
+            },
+            { 
+                text: "Budget Cuts", 
+                type: "MALUS", 
+                color: colors.malus,
+                desc: "You must return one of your cards (of your choice) to the bottom of the deck."
+            },
+            { 
+                text: "Headhunter", 
+                type: "BONUS", 
+                color: colors.bonus,
+                desc: "Steal a random card from the hand of the player of your choice."
+            },
+            { 
+                text: "Coffee Break", 
+                type: "NEUTRAL", 
+                color: colors.neutral,
+                desc: "Nothing happens. Relax and proceed to the interview."
+            },
+            { 
+                text: "Wifi Down", 
+                type: "MALUS", 
+                color: colors.malus,
+                desc: "Communication error! You cannot ask for a card. Just draw one card and end turn."
+            },
+            { 
+                text: "CEO's Favorite", 
+                type: "BONUS", 
+                color: colors.bonus,
+                desc: "Great job! Immediately replay a complete turn."
+            },
+            { 
+                text: "Audit", 
+                type: "SPECIAL", 
+                color: colors.special,
+                desc: "Name a family. All players with a card from that family must raise their hand."
+            }
         ];
 
-        let currentAngle = 0; // Angle actuel
-        let isSpinning = false; // Est-ce qu'on tourne ?
-        const arc = 2 * Math.PI / segments.length; // Taille d'une part
+        let currentAngle = 0;
+        let isSpinning = false;
+        const arc = 2 * Math.PI / segments.length;
 
-        // --- DESSINER LA ROUE ---
         function drawWheel() {
             ctx.clearRect(0, 0, size, size);
 
             segments.forEach((segment, i) => {
                 const angle = currentAngle + i * arc;
-                
                 ctx.beginPath();
                 ctx.fillStyle = segment.color;
                 ctx.moveTo(centerX, centerY);
                 ctx.arc(centerX, centerY, radius, angle, angle + arc);
                 ctx.lineTo(centerX, centerY);
                 ctx.fill();
-                
-                // Bordure blanche entre les parts
                 ctx.strokeStyle = "white";
                 ctx.lineWidth = 4;
                 ctx.stroke();
 
-                // Texte
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(angle + arc / 2);
                 ctx.textAlign = "right";
-                ctx.fillStyle = "#333"; // Couleur du texte
+                ctx.fillStyle = "#333";
                 ctx.font = "bold 24px Arial";
+                // ICI: On dessine seulement le 'text' (Le Nom), pas la 'desc'
                 ctx.fillText(segment.text, radius - 20, 10);
                 ctx.restore();
             });
         }
 
-        // --- FAIRE TOURNER ---
         function spinWheel() {
-            if (isSpinning) return; // Empêche de cliquer si ça tourne déjà
+            if (isSpinning) return;
             isSpinning = true;
-            
-            // Calcul aléatoire de la rotation
-            const spinDuration = 3000; // 3 secondes
-            const randomSpin = Math.floor(Math.random() * 360) + 360 * 5; // Au moins 5 tours
+            const spinDuration = 3000;
+            const randomSpin = Math.floor(Math.random() * 360) + 360 * 5;
             const startAngle = currentAngle;
             let startTime = null;
 
             function animate(timestamp) {
                 if (!startTime) startTime = timestamp;
                 const progress = timestamp - startTime;
-                
-                // Easing (ralentissement progressif)
                 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
                 const percent = Math.min(progress / spinDuration, 1);
                 
@@ -281,29 +325,25 @@
             requestAnimationFrame(animate);
         }
 
-        // --- AFFICHER LE RÉSULTAT ---
         function showResult() {
-            // Calculer quel segment est sous la flèche (en haut = 270 degrés ou -90)
-            // On normalise l'angle
             const actualAngle = (currentAngle % (2 * Math.PI));
-            // La flèche est à -PI/2 (en haut). On doit inverser la logique pour trouver l'index.
-            // Formule simplifiée pour retrouver l'index basé sur la rotation
             const index = Math.floor((2 * Math.PI - (actualAngle + Math.PI / 2) % (2 * Math.PI)) / arc) % segments.length;
             
             const winner = segments[index];
 
-            // Remplir la modale
             const modal = document.getElementById('resultModal');
-            const title = document.getElementById('resultTitle');
-            const text = document.getElementById('resultText');
+            const type = document.getElementById('resultType');
+            const name = document.getElementById('resultName');
+            const desc = document.getElementById('resultDesc');
             const card = document.getElementById('modalCard');
 
-            title.innerText = winner.type;
-            text.innerText = winner.text;
+            // C'est ici qu'on injecte la description pour l'affichage
+            type.innerText = winner.type;
+            name.innerText = winner.text;
+            desc.innerText = winner.desc; 
             
-            // Changer la couleur de la bordure selon le type
             card.style.borderTopColor = winner.color;
-            title.style.color = winner.color === colors.neutral ? '#d4ac0d' : winner.color; // Ajustement contraste jaune
+            name.style.color = winner.color === colors.neutral ? '#d4ac0d' : winner.color;
 
             modal.style.display = 'flex';
         }
@@ -312,10 +352,7 @@
             document.getElementById('resultModal').style.display = 'none';
         }
 
-        // Dessin initial
         drawWheel();
-
     </script>
 </body>
-
 </html>
